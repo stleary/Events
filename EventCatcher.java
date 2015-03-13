@@ -35,9 +35,9 @@ import org.json.*;
  * EventCatcher opens a subscription for events on a Cisco CX or v4-v7 IPS sensor
  * Simple build instructions:
  *  Minimum JDK: Java 1.8
- * 	Requires the JSON parsing package from www.org.json (https://github.com/douglascrockford/JSON-java)
+ *     Requires the JSON parsing package from www.org.json (https://github.com/douglascrockford/JSON-java)
  *  Here is a simple way to build and execute EventCatcher:
- * 	    cd to the directory of your choice
+ *         cd to the directory of your choice
  *      copy EventCatcher.java to this directory
  *      Create an org/json subdirectory tree
  *      Pull the JSON-java files and copy them to org/json
@@ -49,27 +49,27 @@ import org.json.*;
 
 public class EventCatcher
 {
-	private static final String FOR_HELP_TYPE_JAVA_EVENT_CATCHER = "For help, type \"java EventCatcher\"";
+    private static final String FOR_HELP_TYPE_JAVA_EVENT_CATCHER = "For help, type \"java EventCatcher\"";
 
-	/**
-	 * Lists all supported sensor types
-	 * IPS means v5 or greater
-	 * IPS v3 or less is not supported
-	 */
-	enum SensorType {
-		IPS_V4("ipsv4"), IPS("ips"), CX("cx");
-		private String sensor;
-		SensorType(String s) {
-			sensor = s;
-		}
-		public String toString() {
-			return sensor;
-		}
-	};
+    /**
+     * Lists all supported sensor types
+     * IPS means v5 or greater
+     * IPS v3 or less is not supported
+     */
+    enum SensorType {
+        IPS_V4("ipsv4"), IPS("ips"), CX("cx");
+        private String sensor;
+        SensorType(String s) {
+            sensor = s;
+        }
+        public String toString() {
+            return sensor;
+        }
+    };
 
-	// specifies which type of sensor is being contacted
-	SensorType sensorType;
-	
+    // specifies which type of sensor is being contacted
+    SensorType sensorType;
+    
     // Using the -v  parameter sets verbose=true for debug-level output
     boolean verbose = false;
 
@@ -126,15 +126,15 @@ public class EventCatcher
      * @param getParams IPS sensor get request params
      */
     public EventCatcher (String sensor, String uri, String sensorUsername, String sensorPassword, boolean verbose,    
-    		String openParams, String getParams)
+            String openParams, String getParams)
     {
-    	if (sensor.equals("ipsv4")) {
-    		sensorType = SensorType.IPS_V4;
-    	} else if (sensor.equals("ips")) {
-    		sensorType = SensorType.IPS;
-    	} else {
-    		sensorType = SensorType.CX;
-    	}
+        if (sensor.equals("ipsv4")) {
+            sensorType = SensorType.IPS_V4;
+        } else if (sensor.equals("ips")) {
+            sensorType = SensorType.IPS;
+        } else {
+            sensorType = SensorType.CX;
+        }
         this.uri = new StringBuffer(uri);
         this.sensorUsername = new StringBuffer(sensorUsername);
         this.sensorPassword = new StringBuffer(sensorPassword);
@@ -147,54 +147,54 @@ public class EventCatcher
     /**
      * processes events from the server, depending on the device type
      * Supported devices: 
-     * 	IPS v4 
-     * 	IPS v5 and greater
+     *     IPS v4 
+     *     IPS v5 and greater
      *  CX  all versions
      */
     public void processEvents() {
-    	if (isIPS()) {
-        	// Different sensor versions connect to different servlets
-        	if (sensorType == SensorType.IPS_V4) {
-        		uri.append("/cgi-bin/event-server");
-        	} else {
-        		uri.append("/cgi-bin/sdee-server");
-        	}
-    		processIPSEvents();
-    	} else {
-    		processCXEvents();
-    	}
+        if (isIPS()) {
+            // Different sensor versions connect to different servlets
+            if (sensorType == SensorType.IPS_V4) {
+                uri.append("/cgi-bin/event-server");
+            } else {
+                uri.append("/cgi-bin/sdee-server");
+            }
+            processIPSEvents();
+        } else {
+            processCXEvents();
+        }
     }
 
-	/**
+    /**
      * Gets CX events. It sends an unending sequence of event requests, 
      * starting with an action=open request.
      */
     private void processCXEvents() {
-    	
-    	/**
-    	 * Login to device
-    	 */
+        
+        /**
+         * Login to device
+         */
         StringBuffer authenticationUri= new StringBuffer(uri+"/authentication/login/");
         sensorXmlMsg = new StringBuffer("username="+sensorUsername+"&password="+sensorPassword+"&next=\"\"");
         StringBuffer str = new StringBuffer();
         boolean ok = processSensorRequest(authenticationUri.toString(), str);
         if (!ok) {
-        	System.out.println("Failed to authenticate");
-        	return;
+            System.out.println("Failed to authenticate");
+            return;
         }
-		
-		/**
-		 * Register an event subscription and get the subscription id
-		 */
-		StringBuffer subscriptionUri = new StringBuffer(uri+"/api/analyze/events/Eventrealtime/register.json");
-		sensorXmlMsg = new StringBuffer("filter:{\"items\":[{\"include\":[\"true\"],"+
-				"\"type\":[\"range\"],}\"name\":[\"Ev_TypeId\"],"+
-				"\"value\":[\"0-2147483647\",\"30064771072-32212254719\",\"68719476736-70866960383\"]}],"+
-				"\"op\":\"ALL\"}");
-		ok = processSensorRequest(subscriptionUri.toString(), str);
+        
+        /**
+         * Register an event subscription and get the subscription id
+         */
+        StringBuffer subscriptionUri = new StringBuffer(uri+"/api/analyze/events/Eventrealtime/register.json");
+        sensorXmlMsg = new StringBuffer("filter:{\"items\":[{\"include\":[\"true\"],"+
+                "\"type\":[\"range\"],}\"name\":[\"Ev_TypeId\"],"+
+                "\"value\":[\"0-2147483647\",\"30064771072-32212254719\",\"68719476736-70866960383\"]}],"+
+                "\"op\":\"ALL\"}");
+        ok = processSensorRequest(subscriptionUri.toString(), str);
         if (!ok) {
-        	System.out.println("Failed to register");
-        	return;
+            System.out.println("Failed to register");
+            return;
         }
         
         /**
@@ -205,19 +205,19 @@ public class EventCatcher
          */
         int idx = str.toString().indexOf("}{");
         if (idx != -1) {
-        	str = new StringBuffer(str.substring(idx+1));
+            str = new StringBuffer(str.substring(idx+1));
         }
-    	JSONObject json = new JSONObject(str.toString());
-   		Boolean isValid = json.getBoolean("valid");
-   		if (isValid) {
-   			subscriptionId = json.getString("id");
-   		} else {
-   			System.out.println("regId part of registration response not valid");
-    		return;
-    	}
+        JSONObject json = new JSONObject(str.toString());
+           Boolean isValid = json.getBoolean("valid");
+           if (isValid) {
+               subscriptionId = json.getString("id");
+           } else {
+               System.out.println("regId part of registration response not valid");
+            return;
+        }
 
         // now get some events!
-		StringBuffer getUri = new StringBuffer(uri+"/api/analyze/events/Eventrealtime/rtdata/" +subscriptionId+ ".json?tz=360&rows=25");
+        StringBuffer getUri = new StringBuffer(uri+"/api/analyze/events/Eventrealtime/rtdata/" +subscriptionId+ ".json?tz=360&rows=25");
         while (ok) {
             str = new StringBuffer();
             ok = processSensorRequest(getUri.toString(), str);
@@ -226,12 +226,12 @@ public class EventCatcher
             json = new JSONObject(str.toString());
             isValid = json.getBoolean("valid");
             if (!isValid) {
-            	System.out.println("rtdata response was not valid: " +str.toString());
-            	return;
+                System.out.println("rtdata response was not valid: " +str.toString());
+                return;
             }
             Integer rows = json.getInt("numRows");
             if (rows == 0) {
-            	eventsFound = false;
+                eventsFound = false;
             }
             if (eventsFound) {
                 JSONArray items = json.getJSONArray("items");
@@ -242,17 +242,17 @@ public class EventCatcher
                 Thread.sleep(1000);
             } catch (Exception e) {}
         }
-	}
+    }
 
-	/**
+    /**
     * Gets IPS events. It sends an unending sequence of event requests, 
     * starting with an action=open request.
     */
     private void processIPSEvents()
     {
-    	/**
-    	 * Set open params and open a connection to the sensor
-    	 */
+        /**
+         * Set open params and open a connection to the sensor
+         */
         StringBuffer openUri = new StringBuffer(uri+"?action=open&sessionCookies=yes");
         if (openParams.length() > 0) {
             openUri.append(new StringBuffer("&"));
@@ -279,11 +279,11 @@ public class EventCatcher
             boolean eventsFound = true;
             // 5.0 check
             if (sensorType == SensorType.IPS && 
-            		str.toString().indexOf("<sd:events></sd:events>") != -1) {
+                    str.toString().indexOf("<sd:events></sd:events>") != -1) {
                 eventsFound = false;
             // 4.x check
             } else if (sensorType == SensorType.IPS_V4 &&
-            		str.toString().indexOf("schemaVersion=\"1.00\"></events>") != -1) {
+                    str.toString().indexOf("schemaVersion=\"1.00\"></events>") != -1) {
                 eventsFound = false;
             }
             if (eventsFound) {
@@ -354,9 +354,9 @@ public class EventCatcher
                 responseStringBuffer.append(line);
             }
             if (verbose) {
-            	if (sessionCookie.length() > 0) {
-            		System.out.println("SessionCookie [" +sessionCookie+ "]\n");
-            	}
+                if (sessionCookie.length() > 0) {
+                    System.out.println("SessionCookie [" +sessionCookie+ "]\n");
+                }
                 System.out.println("Response [" +responseStringBuffer+ "]");
             }
 
@@ -443,7 +443,7 @@ public class EventCatcher
                 }
                 if (verbose) {
                     System.out.println("= index [" +index+ "] + index [" +
-                    		index1+ "] key [" +key+ "] value [" +value+ "]");
+                            index1+ "] key [" +key+ "] value [" +value+ "]");
                 }
                 if ("subscriptionId".equals(key)) {
                     if (verbose) {
@@ -521,8 +521,8 @@ public class EventCatcher
             if (verbose) {
                 System.out.println("userpassword [" +userPassword+ "]");
             }
-        	char[] chArray = Base64Coder.encode (userPassword.getBytes(), 0, userPassword.length());
-        	encoding = new String(chArray);
+            char[] chArray = Base64Coder.encode (userPassword.getBytes(), 0, userPassword.length());
+            encoding = new String(chArray);
             conn.setRequestProperty ("Authorization", "Basic " + encoding);
         }
 
@@ -534,11 +534,11 @@ public class EventCatcher
         String xmlStr = "XMLHttpRequest";
         String contentTypeStr = "application/x-www-form-urlencoded";
         if (!isIPS()) {
-        	conn.setRequestProperty("X-Requested-With", xmlStr);
-        	conn.setRequestProperty("Content-Type", contentTypeStr);
+            conn.setRequestProperty("X-Requested-With", xmlStr);
+            conn.setRequestProperty("Content-Type", contentTypeStr);
         }
         if (verbose) {
-        	// TODO: just get the data from conn 
+            // TODO: just get the data from conn 
             System.out.println("Header request lines");
             System.out.println("   key [Accept]");
             System.out.println("      value [text/xml]");
@@ -555,10 +555,10 @@ public class EventCatcher
                 System.out.println("      value [" +encoding+ "]");
             }
             if (!isIPS()) {
-            	System.out.println("   key[X-Requested-With]");
-            	System.out.println("      value["+xmlStr+"]");
-            	System.out.println("   key[Content-Type]");
-            	System.out.println("      value["+contentTypeStr+"]");
+                System.out.println("   key[X-Requested-With]");
+                System.out.println("      value["+xmlStr+"]");
+                System.out.println("   key[Content-Type]");
+                System.out.println("      value["+contentTypeStr+"]");
             }
         }
 
@@ -630,7 +630,7 @@ public class EventCatcher
                     if (sbuf.length > 1)
                         password = sbuf[1];
                     if (sbuf.length > 2) {
-                    	System.out.println("Too many user/password parameters");
+                        System.out.println("Too many user/password parameters");
                         System.out.println(FOR_HELP_TYPE_JAVA_EVENT_CATCHER);
                         return;
                     }
@@ -663,9 +663,9 @@ public class EventCatcher
                     sensor = new String(args[1+i+1]).toLowerCase();
                     i += 2;
                     if (!(sensor.equals("ipsv4") ||
-                    		sensor.equals("ips") ||
-                    		sensor.equals("cx"))) {
-                    	System.out.println("invalid device type");
+                            sensor.equals("ips") ||
+                            sensor.equals("cx"))) {
+                        System.out.println("invalid device type");
                         System.out.println(FOR_HELP_TYPE_JAVA_EVENT_CATCHER);
                         return;
                     }
@@ -701,7 +701,7 @@ public class EventCatcher
      * @return true for v4+ ips, otherwise false
      */
     private boolean isIPS() {
-    	return (sensorType == SensorType.IPS || sensorType == SensorType.IPS_V4);
+        return (sensorType == SensorType.IPS || sensorType == SensorType.IPS_V4);
     }
 
 }
@@ -791,114 +791,114 @@ class  MyHostnameVerifier implements HostnameVerifier
 */
 class Base64Coder {
 
-	//The line separator string of the operating system.
-	private static final String systemLineSeparator = System.getProperty("line.separator");
+    //The line separator string of the operating system.
+    private static final String systemLineSeparator = System.getProperty("line.separator");
 
-	//Mapping table from 6-bit nibbles to Base64 characters.
-	private static final char[] map1 = new char[64];
-	static {
-		int i=0;
-		for (char c='A'; c<='Z'; c++) map1[i++] = c;
-		for (char c='a'; c<='z'; c++) map1[i++] = c;
-		for (char c='0'; c<='9'; c++) map1[i++] = c;
-		map1[i++] = '+'; map1[i++] = '/'; }
+    //Mapping table from 6-bit nibbles to Base64 characters.
+    private static final char[] map1 = new char[64];
+    static {
+        int i=0;
+        for (char c='A'; c<='Z'; c++) map1[i++] = c;
+        for (char c='a'; c<='z'; c++) map1[i++] = c;
+        for (char c='0'; c<='9'; c++) map1[i++] = c;
+        map1[i++] = '+'; map1[i++] = '/'; }
 
-	//Mapping table from Base64 characters to 6-bit nibbles.
-	private static final byte[] map2 = new byte[128];
-	static {
-		for (int i=0; i<map2.length; i++) map2[i] = -1;
-		for (int i=0; i<64; i++) map2[map1[i]] = (byte)i; }
+    //Mapping table from Base64 characters to 6-bit nibbles.
+    private static final byte[] map2 = new byte[128];
+    static {
+        for (int i=0; i<map2.length; i++) map2[i] = -1;
+        for (int i=0; i<64; i++) map2[map1[i]] = (byte)i; }
 
-	/**
-	 * Encodes a string into Base64 format.
-	 * No blanks or line breaks are inserted.
-	 * @param s  A String to be encoded.
-	 * @return   A String containing the Base64 encoded data.
-	 */
-	public static String encodeString (String s) {
-		return new String(encode(s.getBytes())); }
+    /**
+     * Encodes a string into Base64 format.
+     * No blanks or line breaks are inserted.
+     * @param s  A String to be encoded.
+     * @return   A String containing the Base64 encoded data.
+     */
+    public static String encodeString (String s) {
+        return new String(encode(s.getBytes())); }
 
-	/**
-	 * Encodes a byte array into Base 64 format and breaks the output into lines of 76 characters.
-	 * This method is compatible with <code>sun.misc.BASE64Encoder.encodeBuffer(byte[])</code>.
-	 * @param in  An array containing the data bytes to be encoded.
-	 * @return    A String containing the Base64 encoded data, broken into lines.
-	 */
-	public static String encodeLines (byte[] in) {
-		return encodeLines(in, 0, in.length, 76, systemLineSeparator); }
+    /**
+     * Encodes a byte array into Base 64 format and breaks the output into lines of 76 characters.
+     * This method is compatible with <code>sun.misc.BASE64Encoder.encodeBuffer(byte[])</code>.
+     * @param in  An array containing the data bytes to be encoded.
+     * @return    A String containing the Base64 encoded data, broken into lines.
+     */
+    public static String encodeLines (byte[] in) {
+        return encodeLines(in, 0, in.length, 76, systemLineSeparator); }
 
-	/**
-	 * Encodes a byte array into Base 64 format and breaks the output into lines.
-	 * @param in            An array containing the data bytes to be encoded.
-	 * @param iOff          Offset of the first byte in <code>in</code> to be processed.
-	 * @param iLen          Number of bytes to be processed in <code>in</code>, starting at <code>iOff</code>.
-	 * @param lineLen       Line length for the output data. Should be a multiple of 4.
-	 * @param lineSeparator The line separator to be used to separate the output lines.
-	 * @return              A String containing the Base64 encoded data, broken into lines.
-	 */
-	public static String encodeLines (byte[] in, int iOff, int iLen, int lineLen, String lineSeparator) {
-		int blockLen = (lineLen*3) / 4;
-		if (blockLen <= 0) throw new IllegalArgumentException();
-		int lines = (iLen+blockLen-1) / blockLen;
-		int bufLen = ((iLen+2)/3)*4 + lines*lineSeparator.length();
-		StringBuilder buf = new StringBuilder(bufLen);
-		int ip = 0;
-		while (ip < iLen) {
-			int l = Math.min(iLen-ip, blockLen);
-			buf.append(encode(in, iOff+ip, l));
-			buf.append(lineSeparator);
-			ip += l; }
-		return buf.toString(); }
+    /**
+     * Encodes a byte array into Base 64 format and breaks the output into lines.
+     * @param in            An array containing the data bytes to be encoded.
+     * @param iOff          Offset of the first byte in <code>in</code> to be processed.
+     * @param iLen          Number of bytes to be processed in <code>in</code>, starting at <code>iOff</code>.
+     * @param lineLen       Line length for the output data. Should be a multiple of 4.
+     * @param lineSeparator The line separator to be used to separate the output lines.
+     * @return              A String containing the Base64 encoded data, broken into lines.
+     */
+    public static String encodeLines (byte[] in, int iOff, int iLen, int lineLen, String lineSeparator) {
+        int blockLen = (lineLen*3) / 4;
+        if (blockLen <= 0) throw new IllegalArgumentException();
+        int lines = (iLen+blockLen-1) / blockLen;
+        int bufLen = ((iLen+2)/3)*4 + lines*lineSeparator.length();
+        StringBuilder buf = new StringBuilder(bufLen);
+        int ip = 0;
+        while (ip < iLen) {
+            int l = Math.min(iLen-ip, blockLen);
+            buf.append(encode(in, iOff+ip, l));
+            buf.append(lineSeparator);
+            ip += l; }
+        return buf.toString(); }
 
-	/**
-	 * Encodes a byte array into Base64 format.
-	 * No blanks or line breaks are inserted in the output.
-	 * @param in  An array containing the data bytes to be encoded.
-	 * @return    A character array containing the Base64 encoded data.
-	 */
-	public static char[] encode (byte[] in) {
-		return encode(in, 0, in.length); }
+    /**
+     * Encodes a byte array into Base64 format.
+     * No blanks or line breaks are inserted in the output.
+     * @param in  An array containing the data bytes to be encoded.
+     * @return    A character array containing the Base64 encoded data.
+     */
+    public static char[] encode (byte[] in) {
+        return encode(in, 0, in.length); }
 
-	/**
-	 * Encodes a byte array into Base64 format.
-	 * No blanks or line breaks are inserted in the output.
-	 * @param in    An array containing the data bytes to be encoded.
-	 * @param iLen  Number of bytes to process in <code>in</code>.
-	 * @return      A character array containing the Base64 encoded data.
-	 */
-	public static char[] encode (byte[] in, int iLen) {
-		return encode(in, 0, iLen); }
+    /**
+     * Encodes a byte array into Base64 format.
+     * No blanks or line breaks are inserted in the output.
+     * @param in    An array containing the data bytes to be encoded.
+     * @param iLen  Number of bytes to process in <code>in</code>.
+     * @return      A character array containing the Base64 encoded data.
+     */
+    public static char[] encode (byte[] in, int iLen) {
+        return encode(in, 0, iLen); }
 
-	/**
-	 * Encodes a byte array into Base64 format.
-	 * No blanks or line breaks are inserted in the output.
-	 * @param in    An array containing the data bytes to be encoded.
-	 * @param iOff  Offset of the first byte in <code>in</code> to be processed.
-	 * @param iLen  Number of bytes to process in <code>in</code>, starting at <code>iOff</code>.
-	 * @return      A character array containing the Base64 encoded data.
-	 */
-	public static char[] encode (byte[] in, int iOff, int iLen) {
-		int oDataLen = (iLen*4+2)/3;       // output length without padding
-		int oLen = ((iLen+2)/3)*4;         // output length including padding
-		char[] out = new char[oLen];
-		int ip = iOff;
-		int iEnd = iOff + iLen;
-		int op = 0;
-		while (ip < iEnd) {
-			int i0 = in[ip++] & 0xff;
-			int i1 = ip < iEnd ? in[ip++] & 0xff : 0;
-			int i2 = ip < iEnd ? in[ip++] & 0xff : 0;
-			int o0 = i0 >>> 2;
-			int o1 = ((i0 &   3) << 4) | (i1 >>> 4);
-			int o2 = ((i1 & 0xf) << 2) | (i2 >>> 6);
-			int o3 = i2 & 0x3F;
-			out[op++] = map1[o0];
-			out[op++] = map1[o1];
-			out[op] = op < oDataLen ? map1[o2] : '='; op++;
-			out[op] = op < oDataLen ? map1[o3] : '='; op++; }
-		return out; }
+    /**
+     * Encodes a byte array into Base64 format.
+     * No blanks or line breaks are inserted in the output.
+     * @param in    An array containing the data bytes to be encoded.
+     * @param iOff  Offset of the first byte in <code>in</code> to be processed.
+     * @param iLen  Number of bytes to process in <code>in</code>, starting at <code>iOff</code>.
+     * @return      A character array containing the Base64 encoded data.
+     */
+    public static char[] encode (byte[] in, int iOff, int iLen) {
+        int oDataLen = (iLen*4+2)/3;       // output length without padding
+        int oLen = ((iLen+2)/3)*4;         // output length including padding
+        char[] out = new char[oLen];
+        int ip = iOff;
+        int iEnd = iOff + iLen;
+        int op = 0;
+        while (ip < iEnd) {
+            int i0 = in[ip++] & 0xff;
+            int i1 = ip < iEnd ? in[ip++] & 0xff : 0;
+            int i2 = ip < iEnd ? in[ip++] & 0xff : 0;
+            int o0 = i0 >>> 2;
+            int o1 = ((i0 &   3) << 4) | (i1 >>> 4);
+            int o2 = ((i1 & 0xf) << 2) | (i2 >>> 6);
+            int o3 = i2 & 0x3F;
+            out[op++] = map1[o0];
+            out[op++] = map1[o1];
+            out[op] = op < oDataLen ? map1[o2] : '='; op++;
+            out[op] = op < oDataLen ? map1[o3] : '='; op++; }
+        return out; }
 
-	//Dummy constructor.
-	private Base64Coder() {}
+    //Dummy constructor.
+    private Base64Coder() {}
 
 }
